@@ -1,0 +1,69 @@
+name: 'Speckle Automate - Build and Publish'
+description: 'Run actions for commits to Speckle Automate Functions, to build and publish them.'
+author: 'specklesystems'
+inputs:
+  speckle_automate_github_action_token: #TODO remove this input when we publish the Speckle Automate GitHub Action. This is only required while the repository is private and the action unpublished.
+    description: 'GitHub Token which allows Git Pull permissions to the Speckle Automate GitHub Action repository. **The token must be stored in GitHub as an encrypted secret**.'
+    required: true
+  speckle_server_url: #FIXME change to speckle_automate_url
+    description: 'Speckle Automate URL. Should include the `https://` protocol and not end with a trailing slash.'
+    required: false
+    default: 'https://automate.speckle.dev' #TODO change to https://automate.speckle.systems
+  speckle_token:
+    description: 'Token for authentication to Speckle Automate Server, allowing publishing of Speckle Functions. **The token must be stored in GitHub as an encrypted secret**.'
+    required: true
+  speckle_function_id:
+    description: 'The unique identifier of the function. Go to Speckle Automate to register your Function and get its Identifier.'
+    required: true
+  speckle_function_path:
+    description: 'Path to the Speckle Function definition (`specklefunction.yaml`) to be published.'
+    required: false
+    default: '.' # root directory of the checked out source code
+  speckle_function_input_schema:
+    description: 'JSON Schema defining the parameters required by the Function. These will be used to create the User Interface displayed to users of your Function in Speckle Automate. Users will be able to provide their data to customise the Function.'
+    required: false
+    default: './input-schema.json'
+  speckle_function_command:
+    description: 'The command to run to execute the function in a runtime environment.'
+    required: true
+  dockerfile_path:
+    description: 'Path to the Dockerfile to be used to build the Speckle Function.'
+    required: false
+    default: './Dockerfile'
+  docker_context:
+    description: 'Path to the directory containing the build context for the Docker image.'
+    required: false
+    default: '.' # root directory of the checked out source code
+runs:
+  using: "composite"
+  steps:
+      - uses: actions/checkout@v3.5.3 # checkout the repository in which this GitHub Action is being used.
+      - uses: actions/checkout@v3.5.3 # checkout the Speckle Automate GitHub Action repository. This entire step is required while the repository is private and the action unpublished.
+        with:
+          repository: 'specklesystems/speckle-automate-github-action'
+          path: 'github-action' # location where the repository is checked out to.
+          ref: 'main'
+          token: ${{ inputs.speckle_automate_github_action_token }}
+      - name: 'Registers the version of the Speckle Function which is about to be published.'
+        id: register-speckle-function-version
+        uses: ./github-action # use the action from the local repo
+        with:
+          speckle_server_url: ${{ input.speckle_server_url }}
+          speckle_token: ${{ input.speckle_token }}
+          speckle_function_id: ${{ input.speckle_function_id }}
+          speckle_function_path: ${{ input.speckle_function_path }}
+          speckle_function_input_schema: ${{ input.speckle_function_input_schema }}
+          speckle_function_command: ${{ input.speckle_function_command }}
+      - name: Log in to Speckle Automate Docker registry
+        uses: docker/login-action@v2.2.0
+        with:
+          registry: ${{ input.speckle_server_url }}
+          username: ${{ input.speckle_token }}
+          password: ${{ input.speckle_token }}
+      - name: Build and push Docker image
+        uses: docker/build-push-action@v4.1.1
+        with:
+          context: ${{ input.docker_context }}
+          file: ${{ input.dockerfile_path }}
+          tags: ${{ input.speckle_server_url }}/${{ input.speckle_function_id }}:${{ steps.register-speckle-function-version.outputs.version_id }}
+          push: true
