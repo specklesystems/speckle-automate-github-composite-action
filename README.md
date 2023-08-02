@@ -10,11 +10,6 @@ This repository contains the source code for the Speckle Automate GitHub Composi
 
 ### Inputs
 
-#### `speckle_automate_github_action_token`
-
-*Required.* GitHub [Personal Access Token](https://docs.github.com/en/authentication/keeping-your-account-and-data-secure/managing-your-personal-access-tokens#creating-a-fine-grained-personal-access-token) which allows Git Pull permissions to the [Speckle Automate GitHub Action](https://github.com/specklesystems/speckle-automate-github-action) repository.
-<!-- TODO: remove when we publish the Speckle Automate GitHub Action -->
-
 #### `speckle_server_url`
 
 Speckle Automate URL which we will publish our Function to. Should include the `https://` protocol and not end with a trailing slash. **The token must be stored in GitHub as an [encrypted secret](https://docs.github.com/en/actions/security-guides/encrypted-secrets)**
@@ -75,8 +70,7 @@ This GitHub Action does not have any outputs. Please instead inspect the logs to
 
 #### Publish a Speckle Function, and build the Docker Image using Docker
 
-1. You will first need to create the required secrets and [store them in GitHub Actions](https://docs.github.com/en/actions/security-guides/encrypted-secrets#creating-encrypted-secrets-for-a-repository).
-    - `SPECKLE_AUTOMATE_GITHUB_ACTION_TOKEN`: This is only temporarily required until the GitHub Action is made public and published. This is a GitHub [Personal Access Token](https://docs.github.com/en/authentication/keeping-your-account-and-data-secure/managing-your-personal-access-tokens#creating-a-fine-grained-personal-access-token) with git read permissions to the [Speckle Automate GitHub Action](https://github.com/specklesystems/speckle-automate-github-action) repository. <!-- TODO: remove once we have published the GitHub Action -->
+1. You will first need to create the required secret and [store it in GitHub Actions](https://docs.github.com/en/actions/security-guides/encrypted-secrets#creating-encrypted-secrets-for-a-repository).
     - `SPECKLE_FUNCTION_PUBLISH_TOKEN`: Please note that this is not a Speckle Account token, but a **Speckle Automate API** token. You can create one by logging into the [Speckle Automate Server](https://automate.speckle.dev) and going to the [API Tokens](https://automate.speckle.dev/tokens) page.
 
 1. You will need to create a GitHub Actions workflow file. You can create a new workflow file, `.github/workflows/speckle-automate.yml`, in your repository.
@@ -99,7 +93,6 @@ This GitHub Action does not have any outputs. Please instead inspect the logs to
             name: Register, Build, and Publish a Speckle Function
             uses: specklesystems/speckle-automate-github-composite-action
             with:
-              speckle_automate_github_action_token: ${{ secrets.SPECKLE_AUTOMATE_GITHUB_ACTION_TOKEN }} # TODO: remove once we have published the GitHub Action
               speckle_token: ${{ secrets.SPECKLE_FUNCTION_PUBLISH_TOKEN }}
               speckle_function_id: XXXXXXXXXX # <-- REPLACE WITH YOUR SPECKLE FUNCTION ID
               speckle_function_command: 'echo "Hello World!"' # <-- REPLACE WITH YOUR SPECKLE FUNCTION COMMAND
