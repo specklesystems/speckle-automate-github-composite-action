@@ -61,5 +61,5 @@ runs:
         with:
           context: ${{ inputs.docker_context }}
           file: ${{ inputs.dockerfile_path }}
-          tags: ${{ jobs.register-speckle-function-version.outputs.speckle_automate_host }}/${{ inputs.speckle_function_id }}:${{ steps.register-speckle-function-version.outputs.version_id }}
+          tags: ${{ steps.register-speckle-function-version.outputs.speckle_automate_host }}/${{ inputs.speckle_function_id }}:${{ steps.register-speckle-function-version.outputs.version_id }}
           push: true
