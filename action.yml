@@ -12,10 +12,6 @@ inputs:
   speckle_function_id:
     description: 'The unique identifier of the function. Go to Speckle Automate to register your Function and get its Identifier.'
     required: true
-  speckle_function_path:
-    description: 'Path to the Speckle Function definition (`specklefunction.yaml`) to be published.'
-    required: false
-    default: '.' # root directory of the checked out source code
   speckle_function_input_schema:
     description: 'JSON Schema defining the parameters required by the Function. These will be used to create the User Interface displayed to users of your Function in Speckle Automate. Users will be able to provide their data to customise the Function.'
     required: false
@@ -35,19 +31,12 @@ runs:
   using: "composite"
   steps:
       - uses: actions/checkout@v3.5.3 # checkout the repository in which this GitHub Action is being used.
-      - uses: actions/checkout@v3.5.3 # checkout the Speckle Automate GitHub Action repository. This entire step is required while the repository the action is unpublished.
-        with:
-          repository: 'specklesystems/speckle-automate-github-action'
-          path: 'github-action' # location where the repository is checked out to.
-          ref: 'main'
-      - name: 'Registers the version of the Speckle Function which is about to be published.'
-        id: register-speckle-function-version
-        uses: ./github-action # use the action from the local repo
+      - name: Speckle Automate function version publisher
+        uses: specklesystems/speckle-automate-github-action@0.1.1
         with:
           speckle_server_url: ${{ inputs.speckle_server_url }}
           speckle_token: ${{ inputs.speckle_token }}
           speckle_function_id: ${{ inputs.speckle_function_id }}
-          speckle_function_path: ${{ inputs.speckle_function_path }}
           speckle_function_input_schema: ${{ inputs.speckle_function_input_schema }}
           speckle_function_command: ${{ inputs.speckle_function_command }}
       - name: Log in to Speckle Automate Docker registry
