@@ -1,6 +1,9 @@
-name: 'Speckle Automate - Build and Publish'
-description: 'Run actions for commits to Speckle Automate Functions, to build and publish them.'
+name: 'Speckle Automate Function - Build and Publish'
+description: 'Builds and publishes a new version of a Speckle Automate Function to the Speckle Automate platform.'
 author: 'specklesystems'
+branding:
+  icon: 'upload-cloud'
+  color: 'blue'
 inputs:
   speckle_automate_url:
     description: 'Speckle Automate URL. Should include the `https://` protocol and not end with a trailing slash.'
