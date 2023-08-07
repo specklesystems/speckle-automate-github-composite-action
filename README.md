@@ -10,7 +10,7 @@ This repository contains the source code for the Speckle Automate GitHub Composi
 
 ### Inputs
 
-#### `speckle_server_url`
+#### `speckle_automate_url`
 
 Speckle Automate URL which we will publish our Function to. Should include the `https://` protocol and not end with a trailing slash. **The token must be stored in GitHub as an [encrypted secret](https://docs.github.com/en/actions/security-guides/encrypted-secrets)**
 

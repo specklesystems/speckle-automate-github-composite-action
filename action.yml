@@ -2,7 +2,7 @@ name: 'Speckle Automate - Build and Publish'
 description: 'Run actions for commits to Speckle Automate Functions, to build and publish them.'
 author: 'specklesystems'
 inputs:
-  speckle_server_url: #FIXME change to speckle_automate_url
+  speckle_automate_url:
     description: 'Speckle Automate URL. Should include the `https://` protocol and not end with a trailing slash.'
     required: false
     default: 'https://automate.speckle.dev' #TODO change to https://automate.speckle.systems
@@ -34,7 +34,7 @@ runs:
       - name: Speckle Automate function version publisher
         uses: specklesystems/speckle-automate-github-action@0.1.1
         with:
-          speckle_server_url: ${{ inputs.speckle_server_url }}
+          speckle_automate_url: ${{ inputs.speckle_automate_url }}
           speckle_token: ${{ inputs.speckle_token }}
           speckle_function_id: ${{ inputs.speckle_function_id }}
           speckle_function_input_schema: ${{ inputs.speckle_function_input_schema }}
@@ -42,7 +42,7 @@ runs:
       - name: Log in to Speckle Automate Docker registry
         uses: docker/login-action@v2.2.0
         with:
-          registry: ${{ inputs.speckle_server_url }}
+          registry: ${{ inputs.speckle_automate_url }}
           username: ${{ inputs.speckle_token }}
           password: ${{ inputs.speckle_token }}
       - name: Build and push Docker image
@@ -50,5 +50,6 @@ runs:
         with:
           context: ${{ inputs.docker_context }}
           file: ${{ inputs.dockerfile_path }}
-          tags: ${{ inputs.speckle_server_url }}/${{ inputs.speckle_function_id }}:${{ steps.register-speckle-function-version.outputs.version_id }}
+          tags: ${{ steps.register-speckle-function-version.outputs.speckle_automate_host }}/${{ inputs.speckle_function_id }}:${{ steps.register-speckle-function-version.outputs.version_id }}
+          target: ''
           push: true
