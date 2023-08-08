@@ -35,7 +35,7 @@ runs:
   steps:
       - uses: actions/checkout@v3.5.3 # checkout the repository in which this GitHub Action is being used.
       - name: Speckle Automate function version publisher
-        uses: specklesystems/speckle-automate-github-action@0.1.2
+        uses: specklesystems/speckle-automate-github-action@0.2.0
         with:
           speckle_automate_url: ${{ inputs.speckle_automate_url }}
           speckle_token: ${{ inputs.speckle_token }}
