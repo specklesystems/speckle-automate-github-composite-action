@@ -15,10 +15,9 @@ inputs:
   speckle_function_id:
     description: 'The unique identifier of the function. Go to Speckle Automate to register your Function and get its Identifier.'
     required: true
-  speckle_function_input_schema:
-    description: 'JSON Schema defining the parameters required by the Function. These will be used to create the User Interface displayed to users of your Function in Speckle Automate. Users will be able to provide their data to customise the Function.'
+  speckle_function_input_schema_file_path:
+    description: 'File path containing JSON Schema of the parameters object required by the function. These will be used to create the User Interface displayed to users of your Function in Speckle Automate. Users will be able to provide their data to customise the Function.'
     required: false
-    default: './input-schema.json'
   speckle_function_command:
     description: 'The command to run to execute the function in a runtime environment.'
     required: true
