@@ -35,6 +35,7 @@ runs:
       - uses: actions/checkout@v3.5.3 # checkout the repository in which this GitHub Action is being used.
       - name: Speckle Automate function version publisher
         uses: specklesystems/speckle-automate-github-action@0.4.0
+        id: register_speckle_function_version
         with:
           speckle_automate_url: ${{ inputs.speckle_automate_url }}
           speckle_token: ${{ inputs.speckle_token }}
@@ -52,6 +53,6 @@ runs:
         with:
           context: ${{ inputs.docker_context }}
           file: ${{ inputs.dockerfile_path }}
-          tags: ${{ steps.register-speckle-function-version.outputs.speckle_automate_host }}/${{ inputs.speckle_function_id }}:${{ steps.register-speckle-function-version.outputs.version_id }}
+          tags: ${{ steps.register_speckle_function_version.outputs.speckle_automate_host }}/${{ inputs.speckle_function_id }}:${{ steps.register-speckle-function-version.outputs.version_id }}
           target: ''
           push: true
