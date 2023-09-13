@@ -43,7 +43,7 @@ runs:
           speckle_function_input_schema_file_path: ${{ inputs.speckle_function_input_schema_file_path }}
           speckle_function_command: ${{ inputs.speckle_function_command }}
       - name: Log in to Speckle Automate Docker registry
-        uses: docker/login-action@v2.2.0
+        uses: docker/login-action@v3.0.0
         with:
           registry: ${{ inputs.speckle_automate_url }}
           username: ${{ inputs.speckle_token }}
