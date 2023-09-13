@@ -49,7 +49,7 @@ runs:
           username: ${{ inputs.speckle_token }}
           password: ${{ inputs.speckle_token }}
       - name: Build and push Docker image
-        uses: docker/build-push-action@v4.1.1
+        uses: docker/build-push-action@v5.0.0
         with:
           context: ${{ inputs.docker_context }}
           file: ${{ inputs.dockerfile_path }}
