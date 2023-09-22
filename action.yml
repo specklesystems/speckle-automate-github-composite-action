@@ -60,7 +60,7 @@ runs:
         with:
           context: ${{ inputs.docker_context }}
           file: ${{ inputs.dockerfile_path }}
-          tags: ${{ steps.register_speckle_function_version.outputs.speckle_automate_host }}/${{ inputs.speckle_function_id }}:${{ releaseTag }}
+          tags: ${{ steps.register_speckle_function_version.outputs.speckle_automate_host }}/${{ inputs.speckle_function_id }}:$releaseTag
           target: ''
           push: true
       - name: Speckle Automate function version publisher
