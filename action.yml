@@ -71,5 +71,5 @@ runs:
           speckle_token: ${{ inputs.speckle_token }}
           speckle_function_id: ${{ inputs.speckle_function_id }}
           speckle_function_input_schema_file_path: ${{ inputs.speckle_function_input_schema_file_path }}
-          speckle_function_release_tag: ${{ releaseTag }}
+          speckle_function_release_tag: $releaseTag
           speckle_function_command: ${{ inputs.speckle_function_command }}
