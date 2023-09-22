@@ -33,15 +33,22 @@ runs:
   using: "composite"
   steps:
       - uses: actions/checkout@v3.5.3 # checkout the repository in which this GitHub Action is being used.
-      - name: Speckle Automate function version publisher
-        uses: specklesystems/speckle-automate-github-action@0.5.0
-        id: register_speckle_function_version
-        with:
-          speckle_automate_url: ${{ inputs.speckle_automate_url }}
-          speckle_token: ${{ inputs.speckle_token }}
-          speckle_function_id: ${{ inputs.speckle_function_id }}
-          speckle_function_input_schema_file_path: ${{ inputs.speckle_function_input_schema_file_path }}
-          speckle_function_command: ${{ inputs.speckle_function_command }}
+      - name: Set Version tag
+        shell: bash
+        run: |
+          echo "Determining Release tag value"
+
+          if [[ ${GITHUB_REF_TYPE} == "tag" ]]
+          then
+            echo "Workflow triggered by a git tag"
+            RELEASE_TAG=${GITHUB_REF_NAME}
+          else
+            echo "Workflow triggered on a git branch"
+            RELEASE_TAG=$(git rev-parse --short ${GITHUB_SHA})
+          fi
+
+          echo "Setting the function's releaseTag to: ${RELEASE_TAG}"
+          echo "releaseTag=${RELEASE_TAG}" >> "$GITHUB_ENV"
       - name: Log in to Speckle Automate Docker registry
         uses: docker/login-action@v2.2.0
         with:
@@ -53,6 +60,16 @@ runs:
         with:
           context: ${{ inputs.docker_context }}
           file: ${{ inputs.dockerfile_path }}
-          tags: ${{ steps.register_speckle_function_version.outputs.speckle_automate_host }}/${{ inputs.speckle_function_id }}:${{ steps.register_speckle_function_version.outputs.version_tag }}
+          tags: ${{ steps.register_speckle_function_version.outputs.speckle_automate_host }}/${{ inputs.speckle_function_id }}:${{ releaseTag }}
           target: ''
           push: true
+      - name: Speckle Automate function version publisher
+        uses: specklesystems/speckle-automate-github-action@0.6.0
+        id: register_speckle_function_version
+        with:
+          speckle_automate_url: ${{ inputs.speckle_automate_url }}
+          speckle_token: ${{ inputs.speckle_token }}
+          speckle_function_id: ${{ inputs.speckle_function_id }}
+          speckle_function_input_schema_file_path: ${{ inputs.speckle_function_input_schema_file_path }}
+          speckle_function_release_tag: ${{ releaseTag }}
+          speckle_function_command: ${{ inputs.speckle_function_command }}
