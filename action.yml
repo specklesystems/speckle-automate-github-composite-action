@@ -60,7 +60,7 @@ runs:
         run: |
           AUTOMATE_HOST=$(python -c 'from urllib.parse import urlparse; print(urlparse("${{ inputs.speckle_automate_url }}").netloc)')
           echo "Parsed automate host: ${AUTOMATE_HOST}"
-          echo "automateHost=${AUTOMATE_HOST}"" >>"$GITHUB_ENV"
+          echo "automateHost=${AUTOMATE_HOST}" >>"$GITHUB_ENV"
       - name: Build and push Docker image
         uses: docker/build-push-action@v4.1.1
         with:
