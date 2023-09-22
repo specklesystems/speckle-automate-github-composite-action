@@ -55,16 +55,22 @@ runs:
           registry: ${{ inputs.speckle_automate_url }}
           username: ${{ inputs.speckle_token }}
           password: ${{ inputs.speckle_token }}
+      - name: Parse automate host
+        shell: bash
+        run: |
+          AUTOMATE_HOST=$(python -c 'from urllib.parse import urlparse; print(urlparse("${{ inputs.speckle_automate_url }}").netloc)')
+          echo "Parsed automate host: ${AUTOMATE_HOST}"
+          echo "automateHost=${AUTOMATE_HOST}"" >>"$GITHUB_ENV"
       - name: Build and push Docker image
         uses: docker/build-push-action@v4.1.1
         with:
           context: ${{ inputs.docker_context }}
           file: ${{ inputs.dockerfile_path }}
-          tags: ${{ steps.register_speckle_function_version.outputs.speckle_automate_host }}/${{ inputs.speckle_function_id }}:${{ env.releaseTag }}
+          tags: ${{ env.automateHost }}/${{ inputs.speckle_function_id }}:${{ env.releaseTag }}
           target: ''
           push: true
       - name: Speckle Automate function version publisher
-        uses: specklesystems/speckle-automate-github-action@0.6.0
+        uses: specklesystems/speckle-automate-github-action@0.6.1
         id: register_speckle_function_version
         with:
           speckle_automate_url: ${{ inputs.speckle_automate_url }}
