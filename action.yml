@@ -61,6 +61,16 @@ runs:
           AUTOMATE_HOST=$(python -c 'from urllib.parse import urlparse; print(urlparse("${{ inputs.speckle_automate_url }}").netloc)')
           echo "Parsed automate host: ${AUTOMATE_HOST}"
           echo "automateHost=${AUTOMATE_HOST}" >>"$GITHUB_ENV"
+      - name: Ensure image doesn't exist in registry
+        shell: bash
+        run: |
+          set +e
+          docker manifest inspect ${{ env.automateHost }}/${{ inputs.speckle_function_id }}:${{ env.releaseTag }}
+          if [[ $? == 1 ]]
+          then
+            echo "Cannot override the existing release tag ${{ env.releaseTag }}. Please publish a new release!"
+            exit 1
+          fi
       - name: Build and push Docker image
         uses: docker/build-push-action@v4.1.1
         with:
