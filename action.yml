@@ -33,6 +33,29 @@ runs:
   using: "composite"
   steps:
       - uses: actions/checkout@v3.5.3 # checkout the repository in which this GitHub Action is being used.
+      - name: Validate inputs
+        shell: bash
+        run: |
+          if  [ -z "${{ inputs.speckle_token }}" ]; then
+            echo "ERROR: speckle_token secret is required"
+            exit 1
+          fi
+          if  [ -z "${{ inputs.speckle_automate_url }}" ]; then
+            echo "ERROR: speckle_automate_url input value is required"
+            exit 1
+          fi
+          if  [ -z "${{ inputs.speckle_function_id }}" ]; then
+            echo "ERROR: speckle_function_id input value is required"
+            exit 1
+          fi
+          if  [ -z "${{ inputs.speckle_function_input_schema_file_path }}" ]; then
+            echo "ERROR: speckle_function_input_schema_file_path input value is required"
+            exit 1
+          fi
+          if  [ -z "${{ inputs.speckle_function_command }}" ]; then
+            echo "ERROR: speckle_function_command input value is required"
+            exit 1
+          fi
       - name: Set Version tag
         shell: bash
         run: |
