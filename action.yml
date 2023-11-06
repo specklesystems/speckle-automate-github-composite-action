@@ -21,6 +21,12 @@ inputs:
   speckle_function_command:
     description: 'The command to run to execute the function in a runtime environment.'
     required: true
+  speckle_function_recommended_cpu_m:
+    description: 'The recommended maximum CPU in millicores for the function. 1000 millicores = 1 CPU core. Defaults to 1000 millicores (1 CPU core). If the Function exceeds this limit, it will be throttled to run within the limit.'
+    required: false
+  speckle_function_recommended_memory_mi:
+    description: 'The recommended maximum memory in mebibytes for the function. 1024 mebibytes = 1 gibibyte. Defaults to 100 mebibytes. If the Function exceeds this limit, it will be terminated.'
+    required: false
   dockerfile_path:
     description: 'Path to the Dockerfile to be used to build the Speckle Function.'
     required: false
