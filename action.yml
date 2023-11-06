@@ -103,7 +103,7 @@ runs:
           target: ''
           push: true
       - name: Speckle Automate function version publisher
-        uses: specklesystems/speckle-automate-github-action@0.6.1
+        uses: specklesystems/speckle-automate-github-action@0.7.0
         id: register_speckle_function_version
         with:
           speckle_automate_url: ${{ inputs.speckle_automate_url }}
@@ -112,3 +112,5 @@ runs:
           speckle_function_input_schema_file_path: ${{ inputs.speckle_function_input_schema_file_path }}
           speckle_function_release_tag: ${{ env.releaseTag }}
           speckle_function_command: ${{ inputs.speckle_function_command }}
+          speckle_function_recommended_cpu_m: ${{ inputs.speckle_function_recommended_cpu_m }}
+          speckle_function_recommended_memory_mi: ${{ inputs.speckle_function_recommended_memory_mi }}
