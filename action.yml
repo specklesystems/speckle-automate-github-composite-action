@@ -21,6 +21,12 @@ inputs:
   speckle_function_command:
     description: 'The command to run to execute the function in a runtime environment.'
     required: true
+  speckle_function_recommended_cpu_m:
+    description: 'The recommended maximum CPU in millicores for the function. 1000 millicores = 1 CPU core. Defaults to 1000 millicores (1 CPU core). If the Function exceeds this limit, it will be throttled to run within the limit.'
+    required: false
+  speckle_function_recommended_memory_mi:
+    description: 'The recommended maximum memory in mebibytes for the function. 1024 mebibytes = 1 gibibyte. Defaults to 100 mebibytes. If the Function exceeds this limit, it will be terminated.'
+    required: false
   dockerfile_path:
     description: 'Path to the Dockerfile to be used to build the Speckle Function.'
     required: false
@@ -103,7 +109,7 @@ runs:
           target: ''
           push: true
       - name: Speckle Automate function version publisher
-        uses: specklesystems/speckle-automate-github-action@0.6.1
+        uses: specklesystems/speckle-automate-github-action@0.7.0
         id: register_speckle_function_version
         with:
           speckle_automate_url: ${{ inputs.speckle_automate_url }}
@@ -112,3 +118,5 @@ runs:
           speckle_function_input_schema_file_path: ${{ inputs.speckle_function_input_schema_file_path }}
           speckle_function_release_tag: ${{ env.releaseTag }}
           speckle_function_command: ${{ inputs.speckle_function_command }}
+          speckle_function_recommended_cpu_m: ${{ inputs.speckle_function_recommended_cpu_m }}
+          speckle_function_recommended_memory_mi: ${{ inputs.speckle_function_recommended_memory_mi }}
