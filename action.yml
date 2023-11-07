@@ -38,7 +38,7 @@ inputs:
 runs:
   using: "composite"
   steps:
-      - uses: actions/checkout@v3.5.3 # checkout the repository in which this GitHub Action is being used.
+      - uses: actions/checkout@v4 # checkout the repository in which this GitHub Action is being used.
       - name: Validate inputs
         shell: bash
         run: |
