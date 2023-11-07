@@ -50,6 +50,14 @@ Defaults to `./input-schema.json`
 
 For example, if you are using Python, you might use `python3 main.py`. If you are using Node.js, you might use `node main.js`. If using bash shell, `bash main.sh` etc. etc..  Even if the command is defined within your Dockerfile (for examples, using the `CMD` or `ENTRYPOINT` statements), you must provide the command here in order for Speckle Automate to run the function.
 
+#### `speckle_function_recommended_cpu_m`
+
+The recommended maximum CPU in millicores for the function. 1000 millicores = 1 CPU core. Defaults to 1000 millicores (1 CPU core). If the Function exceeds this limit, it will be throttled to run within the limit.
+
+#### `speckle_function_recommended_memory_mi`
+
+The recommended maximum memory in mebibytes for the function. 1024 mebibytes = 1 gibibyte. Defaults to 100 mebibytes. If the Function exceeds this limit, it will be terminated.
+
 #### `dockerfile_path`
 
 Path to the Dockerfile to be used to build the Speckle Function.
