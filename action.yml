@@ -79,7 +79,7 @@ runs:
           echo "Setting the function's releaseTag to: ${RELEASE_TAG}"
           echo "releaseTag=${RELEASE_TAG}" >> "$GITHUB_ENV"
       - name: Log in to Speckle Automate Docker registry
-        uses: docker/login-action@v2.2.0
+        uses: docker/login-action@v3.0.0
         with:
           registry: ${{ inputs.speckle_automate_url }}
           username: ${{ inputs.speckle_token }}
