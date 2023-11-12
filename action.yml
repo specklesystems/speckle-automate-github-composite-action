@@ -78,6 +78,8 @@ runs:
 
           echo "Setting the function's releaseTag to: ${RELEASE_TAG}"
           echo "releaseTag=${RELEASE_TAG}" >> "$GITHUB_ENV"
+      - name: Set up Docker Buildx # required to enable caching of docker build
+        uses: docker/setup-buildx-action@v2
       - name: Log in to Speckle Automate Docker registry
         uses: docker/login-action@v3.0.0
         with:
@@ -108,6 +110,8 @@ runs:
           tags: ${{ env.automateHost }}/${{ inputs.speckle_function_id }}:${{ env.releaseTag }}
           target: ''
           push: true
+          cache-from: type=registry,ref=${{ env.automateHost }}/${{ inputs.speckle_function_id }}:buildcache
+          cache-to: type=registry,ref=${{ env.automateHost }}/${{ inputs.speckle_function_id }}:buildcache,mode=max
       - name: Speckle Automate function version publisher
         uses: specklesystems/speckle-automate-github-action@0.8.0
         id: register_speckle_function_version
