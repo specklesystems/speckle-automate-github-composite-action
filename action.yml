@@ -108,6 +108,8 @@ runs:
           tags: ${{ env.automateHost }}/${{ inputs.speckle_function_id }}:${{ env.releaseTag }}
           target: ''
           push: true
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
       - name: Speckle Automate function version publisher
         uses: specklesystems/speckle-automate-github-action@0.7.1
         id: register_speckle_function_version
