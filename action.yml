@@ -109,7 +109,7 @@ runs:
           target: ''
           push: true
       - name: Speckle Automate function version publisher
-        uses: specklesystems/speckle-automate-github-action@0.7.1
+        uses: specklesystems/speckle-automate-github-action@0.8.0
         id: register_speckle_function_version
         with:
           speckle_automate_url: ${{ inputs.speckle_automate_url }}
