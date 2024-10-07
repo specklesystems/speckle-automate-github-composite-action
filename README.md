@@ -35,6 +35,7 @@ Your Speckle Token must have write permissions for the Speckle Function with thi
 #### `speckle_function_input_schema_file_path`
 
 The path to a file containing a JSON Schema. This JSON Schema defines the parameters required by the Function. The JSON Schema will be used to automatically create the User Interface displayed to users of your Function in Speckle Automate. Users will be able to provide their data to customise the Function.
+This can be an absolute path, or a path relative to the Home directory of the GitHub Action runner.
 
 Defaults to `./input-schema.json`
 
