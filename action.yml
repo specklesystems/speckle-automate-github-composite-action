@@ -113,7 +113,7 @@ runs:
           cache-from: type=registry,ref=${{ env.automateHost }}/${{ inputs.speckle_function_id }}:buildcache
           cache-to: type=registry,ref=${{ env.automateHost }}/${{ inputs.speckle_function_id }}:buildcache,mode=max
       - name: Speckle Automate function version publisher
-        uses: specklesystems/speckle-automate-github-action@0.9.1
+        uses: specklesystems/speckle-automate-github-action@0.9.2
         id: register_speckle_function_version
         with:
           speckle_automate_url: ${{ inputs.speckle_automate_url }}
