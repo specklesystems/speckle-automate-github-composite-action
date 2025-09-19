@@ -92,8 +92,9 @@ This GitHub Action does not have any outputs. Please instead inspect the logs to
       docker:
         runs-on: ubuntu-latest
         steps:
-          -
-            name: Register, Build, and Publish a Speckle Function
+          - name: Checkout
+            uses: actions/checkout@v5 # <-- CONFIGURE CHECKOUT FOR YOUR CODE
+          - name: Register, Build, and Publish a Speckle Function
             uses: specklesystems/speckle-automate-github-composite-action
             with:
               speckle_token: ${{ secrets.SPECKLE_FUNCTION_PUBLISH_TOKEN }}
