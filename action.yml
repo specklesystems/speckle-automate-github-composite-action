@@ -96,7 +96,7 @@ runs:
       id: parse_automate_host
       shell: bash
       run: |
-        AUTOMATE_HOST=$(python -c 'from urllib.parse import urlparse; print(urlparse("${INPUTS_SPECKLE_AUTOMATE_URL}").netloc)')
+        AUTOMATE_HOST=$(python -c 'from urllib.parse import urlparse; print(urlparse(os.environ["INPUTS_SPECKLE_AUTOMATE_URL"]).netloc)')
         echo "Parsed automate host: ${AUTOMATE_HOST}"
         echo "automateHost=${AUTOMATE_HOST}" >>"$GITHUB_OUTPUT"
       env:
