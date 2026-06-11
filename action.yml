@@ -1,125 +1,139 @@
-name: 'Speckle Automate Function - Build and Publish'
-description: 'Builds and publishes a new version of a Speckle Automate Function to the Speckle Automate platform.'
-author: 'specklesystems'
+name: "Speckle Automate Function - Build and Publish"
+description: "Builds and publishes a new version of a Speckle Automate Function to the Speckle Automate platform."
+author: "specklesystems"
 branding:
-  icon: 'upload-cloud'
-  color: 'blue'
+  icon: "upload-cloud"
+  color: "blue"
 inputs:
   speckle_automate_url:
-    description: 'Speckle Automate URL. Should include the `https://` protocol and not end with a trailing slash.'
+    description: "Speckle Automate URL. Should include the `https://` protocol and not end with a trailing slash."
     required: false
-    default: 'https://automate.speckle.dev' #TODO change to https://automate.speckle.systems
+    default: "https://automate.speckle.dev" #TODO change to https://automate.speckle.systems
   speckle_token:
-    description: 'Token for authentication to Speckle Automate Server, allowing publishing of Speckle Functions. **The token must be stored in GitHub as an encrypted secret**.'
+    description: "Token for authentication to Speckle Automate Server, allowing publishing of Speckle Functions. **The token must be stored in GitHub as an encrypted secret**."
     required: true
   speckle_function_id:
-    description: 'The unique identifier of the function. Go to Speckle Automate to register your Function and get its Identifier.'
+    description: "The unique identifier of the function. Go to Speckle Automate to register your Function and get its Identifier."
     required: true
   speckle_function_input_schema_file_path:
-    description: 'File path containing JSON Schema of the parameters object required by the function. These will be used to create the User Interface displayed to users of your Function in Speckle Automate. Users will be able to provide their data to customise the Function.'
+    description: "File path containing JSON Schema of the parameters object required by the function. These will be used to create the User Interface displayed to users of your Function in Speckle Automate. Users will be able to provide their data to customise the Function."
     required: false
   speckle_function_command:
-    description: 'The command to run to execute the function in a runtime environment.'
+    description: "The command to run to execute the function in a runtime environment."
     required: true
   speckle_function_recommended_cpu_m:
-    description: 'The recommended maximum CPU in millicores for the function. 1000 millicores = 1 CPU core. Defaults to 1000 millicores (1 CPU core). If the Function exceeds this limit, it will be throttled to run within the limit.'
+    description: "The recommended maximum CPU in millicores for the function. 1000 millicores = 1 CPU core. Defaults to 1000 millicores (1 CPU core). If the Function exceeds this limit, it will be throttled to run within the limit."
     required: false
   speckle_function_recommended_memory_mi:
-    description: 'The recommended maximum memory in mebibytes for the function. 1024 mebibytes = 1 gibibyte. Defaults to 100 mebibytes. If the Function exceeds this limit, it will be terminated.'
+    description: "The recommended maximum memory in mebibytes for the function. 1024 mebibytes = 1 gibibyte. Defaults to 100 mebibytes. If the Function exceeds this limit, it will be terminated."
     required: false
   dockerfile_path:
-    description: 'Path to the Dockerfile to be used to build the Speckle Function.'
+    description: "Path to the Dockerfile to be used to build the Speckle Function."
     required: false
-    default: './Dockerfile'
+    default: "./Dockerfile"
   docker_context:
-    description: 'Path to the directory containing the build context for the Docker image.'
+    description: "Path to the directory containing the build context for the Docker image."
     required: false
-    default: '.' # root directory of the checked out source code
+    default: "." # root directory of the checked out source code
 runs:
   using: "composite"
   steps:
-      - name: Validate inputs
-        shell: bash
-        run: |
-          if  [ -z "${{ inputs.speckle_token }}" ]; then
-            echo "ERROR: speckle_token secret is required"
-            exit 1
-          fi
-          if  [ -z "${{ inputs.speckle_automate_url }}" ]; then
-            echo "ERROR: speckle_automate_url input value is required"
-            exit 1
-          fi
-          if  [ -z "${{ inputs.speckle_function_id }}" ]; then
-            echo "ERROR: speckle_function_id input value is required"
-            exit 1
-          fi
-          if  [ -z "${{ inputs.speckle_function_input_schema_file_path }}" ]; then
-            echo "ERROR: speckle_function_input_schema_file_path input value is required"
-            exit 1
-          fi
-          if  [ -z "${{ inputs.speckle_function_command }}" ]; then
-            echo "ERROR: speckle_function_command input value is required"
-            exit 1
-          fi
-      - name: Set Version tag
-        shell: bash
-        run: |
-          echo "Determining Release tag value"
+    - name: Validate inputs
+      shell: bash
+      run: |
+        if  [ -z "${INPUTS_SPECKLE_TOKEN}" ]; then
+          echo "ERROR: speckle_token secret is required"
+          exit 1
+        fi
+        if  [ -z "${INPUTS_SPECKLE_AUTOMATE_URL}" ]; then
+          echo "ERROR: speckle_automate_url input value is required"
+          exit 1
+        fi
+        if  [ -z "${INPUTS_SPECKLE_FUNCTION_ID}" ]; then
+          echo "ERROR: speckle_function_id input value is required"
+          exit 1
+        fi
+        if  [ -z "${INPUTS_SPECKLE_FUNCTION_INPUT_SCHEMA_FILE_PATH}" ]; then
+          echo "ERROR: speckle_function_input_schema_file_path input value is required"
+          exit 1
+        fi
+        if  [ -z "${INPUTS_SPECKLE_FUNCTION_COMMAND}" ]; then
+          echo "ERROR: speckle_function_command input value is required"
+          exit 1
+        fi
+      env:
+        INPUTS_SPECKLE_TOKEN: ${{ inputs.speckle_token }}
+        INPUTS_SPECKLE_AUTOMATE_URL: ${{ inputs.speckle_automate_url }}
+        INPUTS_SPECKLE_FUNCTION_ID: ${{ inputs.speckle_function_id }}
+        INPUTS_SPECKLE_FUNCTION_INPUT_SCHEMA_FILE_PATH: ${{ inputs.speckle_function_input_schema_file_path }}
+        INPUTS_SPECKLE_FUNCTION_COMMAND: ${{ inputs.speckle_function_command }}
+    - name: Set Version tag
+      id: set_version_tag
+      shell: bash
+      run: |
+        echo "Determining Release tag value"
 
-          if [[ ${GITHUB_REF_TYPE} == "tag" ]]
-          then
-            echo "Workflow triggered by a git tag"
-            RELEASE_TAG=${GITHUB_REF_NAME}
-          else
-            echo "Workflow triggered on a git branch"
-            RELEASE_TAG=$(git rev-parse --short ${GITHUB_SHA})
-          fi
+        if [[ ${GITHUB_REF_TYPE} == "tag" ]]
+        then
+          echo "Workflow triggered by a git tag"
+          RELEASE_TAG=${GITHUB_REF_NAME}
+        else
+          echo "Workflow triggered on a git branch"
+          RELEASE_TAG=$(git rev-parse --short ${GITHUB_SHA})
+        fi
 
-          echo "Setting the function's releaseTag to: ${RELEASE_TAG}"
-          echo "releaseTag=${RELEASE_TAG}" >> "$GITHUB_ENV"
-      - name: Set up Docker Buildx # required to enable caching of docker build
-        uses: docker/setup-buildx-action@v3
-      - name: Log in to Speckle Automate Docker registry
-        uses: docker/login-action@v3.1.0
-        with:
-          registry: ${{ inputs.speckle_automate_url }}
-          username: ${{ inputs.speckle_token }}
-          password: ${{ inputs.speckle_token }}
-      - name: Parse automate host
-        shell: bash
-        run: |
-          AUTOMATE_HOST=$(python -c 'from urllib.parse import urlparse; print(urlparse("${{ inputs.speckle_automate_url }}").netloc)')
-          echo "Parsed automate host: ${AUTOMATE_HOST}"
-          echo "automateHost=${AUTOMATE_HOST}" >>"$GITHUB_ENV"
-      - name: Ensure image doesn't exist in registry
-        shell: bash
-        run: |
-          set +e
-          docker manifest inspect ${{ env.automateHost }}/${{ inputs.speckle_function_id }}:${{ env.releaseTag }}
-          if [[ $? == 0 ]]
-          then
-            echo "Cannot override the existing release tag ${{ env.releaseTag }}. Please publish a new release!"
-            exit 1
-          fi
-      - name: Build and push Docker image
-        uses: docker/build-push-action@v5.3.0
-        with:
-          context: ${{ inputs.docker_context }}
-          file: ${{ inputs.dockerfile_path }}
-          tags: ${{ env.automateHost }}/${{ inputs.speckle_function_id }}:${{ env.releaseTag }}
-          target: ''
-          push: true
-          cache-from: type=registry,ref=${{ env.automateHost }}/${{ inputs.speckle_function_id }}:buildcache
-          cache-to: type=registry,ref=${{ env.automateHost }}/${{ inputs.speckle_function_id }}:buildcache,mode=max
-      - name: Speckle Automate function version publisher
-        uses: specklesystems/speckle-automate-github-action@0.11.0
-        id: register_speckle_function_version
-        with:
-          speckle_automate_url: ${{ inputs.speckle_automate_url }}
-          speckle_token: ${{ inputs.speckle_token }}
-          speckle_function_id: ${{ inputs.speckle_function_id }}
-          speckle_function_input_schema_file_path: ${{ inputs.speckle_function_input_schema_file_path }}
-          speckle_function_release_tag: ${{ env.releaseTag }}
-          speckle_function_command: ${{ inputs.speckle_function_command }}
-          speckle_function_recommended_cpu_m: ${{ inputs.speckle_function_recommended_cpu_m }}
-          speckle_function_recommended_memory_mi: ${{ inputs.speckle_function_recommended_memory_mi }}
+        echo "Setting the function's releaseTag to: ${RELEASE_TAG}"
+        echo "releaseTag=${RELEASE_TAG}" >> "$GITHUB_OUTPUT"
+    - name: Set up Docker Buildx # required to enable caching of docker build
+      uses: docker/setup-buildx-action@d7f5e7f509e45cec5c76c4d5afdd7de93d0b3df5 # v4.1.0
+    - name: Log in to Speckle Automate Docker registry
+      uses: docker/login-action@650006c6eb7dba73a995cc03b0b2d7f5ca915bee # @v4.2.0
+      with:
+        registry: ${{ inputs.speckle_automate_url }}
+        username: ${{ inputs.speckle_token }}
+        password: ${{ inputs.speckle_token }}
+    - name: Parse automate host
+      id: parse_automate_host
+      shell: bash
+      run: |
+        AUTOMATE_HOST=$(python -c 'from urllib.parse import urlparse; print(urlparse("${INPUTS_SPECKLE_AUTOMATE_URL}").netloc)')
+        echo "Parsed automate host: ${AUTOMATE_HOST}"
+        echo "automateHost=${AUTOMATE_HOST}" >>"$GITHUB_OUTPUT"
+      env:
+        INPUTS_SPECKLE_AUTOMATE_URL: ${{ inputs.speckle_automate_url }}
+    - name: Ensure image doesn't exist in registry
+      shell: bash
+      run: |
+        set +e
+        docker manifest inspect ${STEPS_PARSE_AUTOMATE_HOST_OUTPUTS_AUTOMATEHOST}/${INPUTS_SPECKLE_FUNCTION_ID}:${STEPS_SET_VERSION_TAG_OUTPUTS_RELEASETAG}
+        if [[ $? == 0 ]]
+        then
+          echo "Cannot override the existing release tag ${STEPS_SET_VERSION_TAG_OUTPUTS_RELEASETAG}. Please publish a new release!"
+          exit 1
+        fi
+      env:
+        STEPS_PARSE_AUTOMATE_HOST_OUTPUTS_AUTOMATEHOST: ${{ steps.parse_automate_host.outputs.automateHost }}
+        INPUTS_SPECKLE_FUNCTION_ID: ${{ inputs.speckle_function_id }}
+        STEPS_SET_VERSION_TAG_OUTPUTS_RELEASETAG: ${{ steps.set_version_tag.outputs.releaseTag }}
+    - name: Build and push Docker image
+      uses: docker/build-push-action@f9f3042f7e2789586610d6e8b85c8f03e5195baf # v7.2.0
+      with:
+        context: ${{ inputs.docker_context }}
+        file: ${{ inputs.dockerfile_path }}
+        tags: ${{ steps.parse_automate_host.automateHost  }}/${{ inputs.speckle_function_id }}:${{ steps.set_version_tag.outputs.releaseTag }}
+        target: ""
+        push: true
+        cache-from: type=registry,ref=${{ steps.parse_automate_host.automateHost  }}/${{ inputs.speckle_function_id }}:buildcache
+        cache-to: type=registry,ref=${{ steps.parse_automate_host.automateHost  }}/${{ inputs.speckle_function_id }}:buildcache,mode=max
+    - name: Speckle Automate function version publisher
+      uses: specklesystems/speckle-automate-github-action@f2c3ac2ae74fd81e75f068749d0ce7458a79f06b #0.11.0
+      id: register_speckle_function_version
+      with:
+        speckle_automate_url: ${{ inputs.speckle_automate_url }}
+        speckle_token: ${{ inputs.speckle_token }}
+        speckle_function_id: ${{ inputs.speckle_function_id }}
+        speckle_function_input_schema_file_path: ${{ inputs.speckle_function_input_schema_file_path }}
+        speckle_function_release_tag: ${{ steps.set_version_tag.outputs.releaseTag }}
+        speckle_function_command: ${{ inputs.speckle_function_command }}
+        speckle_function_recommended_cpu_m: ${{ inputs.speckle_function_recommended_cpu_m }}
+        speckle_function_recommended_memory_mi: ${{ inputs.speckle_function_recommended_memory_mi }}
