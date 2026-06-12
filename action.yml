@@ -105,14 +105,14 @@ runs:
       shell: bash
       run: |
         set +e
-        docker manifest inspect ${STEPS_PARSE_AUTOMATE_HOST_OUTPUTS_AUTOMATEHOST}/${INPUTS_SPECKLE_FUNCTION_ID}:${STEPS_SET_VERSION_TAG_OUTPUTS_RELEASETAG}
+        docker manifest inspect ${AUTOMATE_HOST}/${INPUTS_SPECKLE_FUNCTION_ID}:${STEPS_SET_VERSION_TAG_OUTPUTS_RELEASETAG}
         if [[ $? == 0 ]]
         then
           echo "Cannot override the existing release tag ${STEPS_SET_VERSION_TAG_OUTPUTS_RELEASETAG}. Please publish a new release!"
           exit 1
         fi
       env:
-        STEPS_PARSE_AUTOMATE_HOST_OUTPUTS_AUTOMATEHOST: ${{ steps.parse_automate_host.outputs.automateHost }}
+        AUTOMATE_HOST: ${{ steps.parse_automate_host.outputs.automateHost }}
         INPUTS_SPECKLE_FUNCTION_ID: ${{ inputs.speckle_function_id }}
         STEPS_SET_VERSION_TAG_OUTPUTS_RELEASETAG: ${{ steps.set_version_tag.outputs.releaseTag }}
     - name: Build and push Docker image
@@ -120,11 +120,11 @@ runs:
       with:
         context: ${{ inputs.docker_context }}
         file: ${{ inputs.dockerfile_path }}
-        tags: ${{ steps.parse_automate_host.automateHost  }}/${{ inputs.speckle_function_id }}:${{ steps.set_version_tag.outputs.releaseTag }}
+        tags: ${{ steps.parse_automate_host.outputs.automateHost  }}/${{ inputs.speckle_function_id }}:${{ steps.set_version_tag.outputs.releaseTag }}
         target: ""
         push: true
-        cache-from: type=registry,ref=${{ steps.parse_automate_host.automateHost  }}/${{ inputs.speckle_function_id }}:buildcache
-        cache-to: type=registry,ref=${{ steps.parse_automate_host.automateHost  }}/${{ inputs.speckle_function_id }}:buildcache,mode=max
+        cache-from: type=registry,ref=${{ steps.parse_automate_host.outputs.automateHost  }}/${{ inputs.speckle_function_id }}:buildcache
+        cache-to: type=registry,ref=${{ steps.parse_automate_host.outputs.automateHost  }}/${{ inputs.speckle_function_id }}:buildcache,mode=max
     - name: Speckle Automate function version publisher
       uses: specklesystems/speckle-automate-github-action@f2c3ac2ae74fd81e75f068749d0ce7458a79f06b #0.11.0
       id: register_speckle_function_version
