@@ -96,25 +96,25 @@ runs:
       id: parse_automate_host
       shell: bash
       run: |
-        AUTOMATE_HOST=$(python -c 'from urllib.parse import urlparse; import os; print(urlparse(os.environ["INPUTS_SPECKLE_AUTOMATE_URL"]).netloc)')
+        AUTOMATE_HOST=$(python -c 'from urllib.parse import urlparse; import os; print(urlparse(os.environ["AUTOMATE_URL_INPUT"]).netloc)')
         echo "Parsed automate host: ${AUTOMATE_HOST}"
         echo "automateHost=${AUTOMATE_HOST}" >>"$GITHUB_OUTPUT"
       env:
-        INPUTS_SPECKLE_AUTOMATE_URL: ${{ inputs.speckle_automate_url }}
+        AUTOMATE_URL_INPUT: ${{ inputs.speckle_automate_url }}
     - name: Ensure image doesn't exist in registry
       shell: bash
       run: |
         set +e
-        docker manifest inspect ${AUTOMATE_HOST}/${INPUTS_SPECKLE_FUNCTION_ID}:${STEPS_SET_VERSION_TAG_OUTPUTS_RELEASETAG}
+        docker manifest inspect ${AUTOMATE_HOST}/${FUNCTION_ID}:${RELEASE_TAG}
         if [[ $? == 0 ]]
         then
-          echo "Cannot override the existing release tag ${STEPS_SET_VERSION_TAG_OUTPUTS_RELEASETAG}. Please publish a new release!"
+          echo "Cannot override the existing release tag ${RELEASE_TAG}. Please publish a new release!"
           exit 1
         fi
       env:
         AUTOMATE_HOST: ${{ steps.parse_automate_host.outputs.automateHost }}
-        INPUTS_SPECKLE_FUNCTION_ID: ${{ inputs.speckle_function_id }}
-        STEPS_SET_VERSION_TAG_OUTPUTS_RELEASETAG: ${{ steps.set_version_tag.outputs.releaseTag }}
+        FUNCTION_ID: ${{ inputs.speckle_function_id }}
+        RELEASE_TAG: ${{ steps.set_version_tag.outputs.releaseTag }}
     - name: Build and push Docker image
       uses: docker/build-push-action@f9f3042f7e2789586610d6e8b85c8f03e5195baf # v7.2.0
       with:
