@@ -35,6 +35,10 @@ inputs:
     description: "Path to the directory containing the build context for the Docker image."
     required: false
     default: "." # root directory of the checked out source code
+  docker_build_args:
+    description: "Docker build arguments passed to docker/build-push-action"
+    required: false
+    default: ""
 runs:
   using: "composite"
   steps:
@@ -122,6 +126,7 @@ runs:
         file: ${{ inputs.dockerfile_path }}
         tags: ${{ steps.parse_automate_host.outputs.automateHost  }}/${{ inputs.speckle_function_id }}:${{ steps.set_version_tag.outputs.releaseTag }}
         target: ""
+        build-args: ${{ inputs.docker_build_args }}
         push: true
         cache-from: type=registry,ref=${{ steps.parse_automate_host.outputs.automateHost  }}/${{ inputs.speckle_function_id }}:buildcache
         cache-to: type=registry,ref=${{ steps.parse_automate_host.outputs.automateHost  }}/${{ inputs.speckle_function_id }}:buildcache,mode=max
