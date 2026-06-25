@@ -17,7 +17,7 @@ inputs:
     required: true
   speckle_function_input_schema_file_path:
     description: "File path containing JSON Schema of the parameters object required by the function. These will be used to create the User Interface displayed to users of your Function in Speckle Automate. Users will be able to provide their data to customise the Function."
-    required: false
+    required: true
   speckle_function_command:
     description: "The command to run to execute the function in a runtime environment."
     required: true
@@ -131,7 +131,7 @@ runs:
         cache-from: type=registry,ref=${{ steps.parse_automate_host.outputs.automateHost  }}/${{ inputs.speckle_function_id }}:buildcache
         cache-to: type=registry,ref=${{ steps.parse_automate_host.outputs.automateHost  }}/${{ inputs.speckle_function_id }}:buildcache,mode=max
     - name: Speckle Automate function version publisher
-      uses: specklesystems/speckle-automate-github-action@f2c3ac2ae74fd81e75f068749d0ce7458a79f06b #0.11.0
+      uses: specklesystems/speckle-automate-github-action@7bd28d381f743156c45409eed57671cc3ecd6741 # 2026.6.0
       id: register_speckle_function_version
       with:
         speckle_automate_url: ${{ inputs.speckle_automate_url }}
